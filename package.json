@@ -1,11 +1,18 @@
 {
   "name": "node-balanced",
   "version": "0.0.0",
-  "description": "",
+  "description": "balanced string matching, and replacing.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": {
+    "name": "Chad Scira",
+    "email": "chadvscira@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/icodeforlove/node-balanced.git"
+  },
+  "license": "MIT"
 }

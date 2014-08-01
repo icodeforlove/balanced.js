@@ -1,6 +1,6 @@
 # Balanced
 
-allows you to replace the contents inside of your own balanced constraints.
+balanced string matching, and replacing.
 
 # install
 
