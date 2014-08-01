@@ -76,3 +76,62 @@ balanced.matches({
 	left: '}'
 });
 ```
+
+## advanced
+
+in this example we have code and we want to avoid replacing text thats inside of the comments
+
+```
+	{
+		@hello 1 {
+			a {
+				b {
+					c {
+
+					}
+				}
+			}
+		}
+	/*
+		@hello 2 {
+			a {
+				b {
+					c {
+
+					}
+				}
+			}
+		}
+	*/
+		@hello 3 {
+			a {
+				b {
+					c {
+
+					}
+				}
+			}
+		}
+	}
+```
+
+with balanced you can do this
+
+```
+	var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
+		matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
+
+	matches.filter(function (match) {
+		var insideComment = false;
+
+		comments.forEach(function (comment) {
+			insideComment = match.index >= comment.index && match.index <= comment.index + comment.length;
+		});
+
+		return !insideComment;
+	});
+
+	balanced.replaceMatchesInString(string, matches, function (source, head, tail) {
+		return head + source + tail;
+	});
+```

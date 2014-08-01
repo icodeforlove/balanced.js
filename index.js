@@ -63,25 +63,27 @@ function replaceMatchesInBetweenBrackets(string, start, right, left, replace) {
 	return replaceMatchesInString(matches, string, replace);
 }
 
+exports.replaceMatchesInString = replaceMatchesInString; 
+
 exports.replacements = function (config) {
 	config = config || {};
+	config.head = config.head || config.right;
 
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');
-	if (!config.start) throw new Error('Balanced: please provide a "start" property');
 	if (!config.right) throw new Error('Balanced: please provide a "right" property');
 	if (!config.left) throw new Error('Balanced: please provide a "left" property');
 	if (typeof config.replace !==  'function') throw new Error('Balanced: please provide a "replace" function');
 
-	return replaceMatchesInBetweenBrackets(config.source, config.start, config.right, config.left, config.replace);
+	return replaceMatchesInBetweenBrackets(config.source, config.head, config.right, config.left, config.replace);
 };
 
 exports.matches = function (config) {
 	config = config || {};
+	config.head = config.head || config.right;
 
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');
-	if (!config.start) throw new Error('Balanced: please provide a "start" property');
 	if (!config.right) throw new Error('Balanced: please provide a "right" property');
 	if (!config.left) throw new Error('Balanced: please provide a "left" property');
 	
-	return matchContentsInBetweenBrackets(config.source, config.start, config.right, config.left);
+	return matchContentsInBetweenBrackets(config.source, config.head, config.right, config.left);
 };
