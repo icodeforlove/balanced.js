@@ -13,51 +13,36 @@ balanced string matching, and replacing.
 lets say you have
 
 ```
-{
-	@hello 1 {
-		a {
-			b {
-				c {
-
-				}
+	{
+		@hello 1 {
+			a {
+			}
+		}
+		@hello 2 {
+			a {
+			}
+		}
+		@hello 3 {
+			a {
 			}
 		}
 	}
-	@hello 2 {
-		a {
-			b {
-				c {
-
-				}
-			}
-		}
-	}
-	@hello 3 {
-		a {
-			b {
-				c {
-
-				}
-			}
-		}
-	}
-}
 ```
 
 and you would like to replace the @hello block easily, balanced allows you to do this
 
 ```
-var balanced = require('node-balanced');
+	var balanced = require('node-balanced');
 
-balanced.replacements({
-	source: source,
-	head: /@hello \d \{/,
-	right: '{',
-	left: '}',
-	replace: function (source, head, tail) {
-		return head + source + tail;
-	}
-});
+	balanced.replacements({
+		source: source,
+		head: /@hello \d \{/,
+		right: '{',
+		left: '}',
+		replace: function (source, head, tail) {
+			return head + source + tail;
+		}
+	});
 ```
 
 this is a simple and efficient way to make balanced replacements, without a parser.
@@ -85,31 +70,16 @@ in this example we have code and we want to avoid replacing text thats inside of
 	{
 		@hello 1 {
 			a {
-				b {
-					c {
-
-					}
-				}
 			}
 		}
 	/*
 		@hello 2 {
 			a {
-				b {
-					c {
-
-					}
-				}
 			}
 		}
 	*/
 		@hello 3 {
 			a {
-				b {
-					c {
-
-					}
-				}
 			}
 		}
 	}
@@ -121,7 +91,7 @@ with balanced you can do this
 	var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
 		matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
 
-	matches.filter(function (match) {
+	matches = matches.filter(function (match) {
 		var insideComment = false;
 
 		comments.forEach(function (comment) {
@@ -131,7 +101,7 @@ with balanced you can do this
 		return !insideComment;
 	});
 
-	balanced.replaceMatchesInString(string, matches, function (source, head, tail) {
+	balanced.replaceMatchesInString(matches, source, function (source, head, tail) {
 		return head + source + tail;
 	});
 ```
