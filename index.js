@@ -59,11 +59,11 @@ function replaceMatchesInBetweenBrackets(string, start, right, left, replace) {
 exports.replacements = function (config) {
 	config = config || {};
 
-	if (!config.source) throw new Error('BalancedReplacer: please provide a "source" property');
-	if (!config.start) throw new Error('BalancedReplacer: please provide a "start" property');
-	if (!config.right) throw new Error('BalancedReplacer: please provide a "right" property');
-	if (!config.left) throw new Error('BalancedReplacer: please provide a "left" property');
-	if (typeof config.replace !==  'function') throw new Error('BalancedReplacer: please provide a "replace" function');
+	if (!config.source) throw new Error('Balanced: please provide a "source" property');
+	if (!config.start) throw new Error('Balanced: please provide a "start" property');
+	if (!config.right) throw new Error('Balanced: please provide a "right" property');
+	if (!config.left) throw new Error('Balanced: please provide a "left" property');
+	if (typeof config.replace !==  'function') throw new Error('Balanced: please provide a "replace" function');
 
 	return replaceMatchesInBetweenBrackets(config.source, config.start, config.right, config.left, config.replace);
 };
@@ -71,10 +71,10 @@ exports.replacements = function (config) {
 exports.matches = function (config) {
 	config = config || {};
 
-	if (!config.source) throw new Error('BalancedReplacer: please provide a "source" property');
-	if (!config.start) throw new Error('BalancedReplacer: please provide a "start" property');
-	if (!config.right) throw new Error('BalancedReplacer: please provide a "right" property');
-	if (!config.left) throw new Error('BalancedReplacer: please provide a "left" property');
+	if (!config.source) throw new Error('Balanced: please provide a "source" property');
+	if (!config.start) throw new Error('Balanced: please provide a "start" property');
+	if (!config.right) throw new Error('Balanced: please provide a "right" property');
+	if (!config.left) throw new Error('Balanced: please provide a "left" property');
 	
 	return matchContentsInBetweenBrackets(config.source, config.start, config.right, config.left);
 };

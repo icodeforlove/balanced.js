@@ -61,3 +61,18 @@ balanced.replacements({
 ```
 
 this is a simple and efficient way to make balanced replacements, without a parser.
+
+## matching
+
+you can get balanced matches by doing the following
+
+```
+var balanced = require('node-balanced');
+
+balanced.matches({
+	source: source,
+	start: /@hello \d \{/,
+	right: '{',
+	left: '}'
+});
+```
