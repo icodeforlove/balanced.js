@@ -51,11 +51,11 @@ var balanced = require('node-balanced');
 
 balanced.replacements({
 	source: source,
-	start: /@hello \d \{/,
+	head: /@hello \d \{/,
 	right: '{',
 	left: '}',
-	replace: function (source, opening, closing) {
-		return opening + source + closing;
+	replace: function (source, head, tail) {
+		return head + source + tail;
 	}
 });
 ```
@@ -71,7 +71,7 @@ var balanced = require('node-balanced');
 
 balanced.matches({
 	source: source,
-	start: /@hello \d \{/,
+	head: /@hello \d \{/,
 	right: '{',
 	left: '}'
 });
