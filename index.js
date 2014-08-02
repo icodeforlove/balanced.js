@@ -57,12 +57,12 @@ Balanced.prototype = {
 			}
 
 			if (this.balance && depth < 0) {
-	            balanced = false;
-	            if (this.exceptions) {
-	            	throw new Error ('Balanced: expected open bracket at ' + match.index);
-	            }
-	            break;
-	        }
+				balanced = false;
+				if (this.exceptions) {
+					throw new Error ('Balanced: expected open bracket at ' + match.index);
+				}
+				break;
+			}
 	 
 			if (matchedOpening !== null && depth === 0) {
 				matches.push({
