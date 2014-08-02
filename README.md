@@ -32,17 +32,19 @@ lets say you have
 and you would like to replace the @hello block easily, balanced allows you to do this
 
 ```
-	var balanced = require('node-balanced');
+var balanced = require('node-balanced');
 
-	balanced.replacements({
-		source: source,
-		head: /@hello \d \{/,
-		right: '{',
-		left: '}',
-		replace: function (source, head, tail) {
-			return head + source + tail;
-		}
-	});
+balanced.replacements({
+	source: source,
+	head: /@hello \d \{/, // optional (defalut: right)
+	right: '{',
+	left: '}',
+	balance: false, // optional (default: false)
+	exceptions: false, // optional (default: false)
+	replace: function (source, head, tail) {
+		return head + source + tail;
+	}
+});
 ```
 
 this is a simple and efficient way to make balanced replacements, without a parser.
@@ -56,9 +58,11 @@ var balanced = require('node-balanced');
 
 balanced.matches({
 	source: source,
-	head: /@hello \d \{/,
+	head: /@hello \d \{/, // optional (defalut: right)
 	right: '{',
-	left: '}'
+	left: '}',
+	balance: false, // optional (default: false)
+	exceptions: false // optional (default: false)
 });
 ```
 
@@ -67,41 +71,41 @@ balanced.matches({
 in this example we have code and we want to avoid replacing text thats inside of the comments
 
 ```
-	{
-		@hello 1 {
-			a {
-			}
-		}
-	/*
-		@hello 2 {
-			a {
-			}
-		}
-	*/
-		@hello 3 {
-			a {
-			}
+{
+	@hello 1 {
+		a {
 		}
 	}
+/*
+	@hello 2 {
+		a {
+		}
+	}
+*/
+	@hello 3 {
+		a {
+		}
+	}
+}
 ```
 
 with balanced you can do this
 
 ```
-	var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
-		matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
+var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
+	matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
 
-	matches = matches.filter(function (match) {
-		var insideComment = false;
+matches = matches.filter(function (match) {
+	var insideComment = false;
 
-		comments.forEach(function (comment) {
-			insideComment = match.index >= comment.index && match.index <= comment.index + comment.length;
-		});
-
-		return !insideComment;
+	comments.forEach(function (comment) {
+		insideComment = match.index >= comment.index && match.index <= comment.index + comment.length;
 	});
 
-	balanced.replaceMatchesInString(matches, source, function (source, head, tail) {
-		return head + source + tail;
-	});
+	return !insideComment;
+});
+
+balanced.replaceMatchesInString(matches, source, function (source, head, tail) {
+	return head + source + tail;
+});
 ```
