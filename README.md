@@ -1,4 +1,4 @@
-# Balanced
+# Balanced [![Build Status](https://travis-ci.org/icodeforlove/node-balanced.png?branch=master)](https://travis-ci.org/icodeforlove/node-balanced)
 
 balanced string matching, and replacing.
 
