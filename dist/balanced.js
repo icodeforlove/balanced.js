@@ -1,3 +1,6 @@
+/**
+ * balanced.js v0.0.4
+ */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -50,7 +53,7 @@ var balanced =
 	function escapeRegExp(str) {
 	  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
-
+	
 	function matchContentsInBetweenBrackets(string, head, right, left) {
 		var caseInsensitive = head instanceof RegExp && head.ignoreCase,
 			headRegExp = head instanceof RegExp ? head : new RegExp(escapeRegExp(head)),
@@ -97,9 +100,9 @@ var balanced =
 		for (var i = 0; i < matches.length; i++) {
 			var match = matches[i],
 				replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length), match.head, match.tail);
-			string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length + 1, (string.length) - (match.index + offset + match.length));
+			string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length + match.tail.length, (string.length) - (match.index + offset + match.length));
 			
-			offset += replacement.length - match.length - 1;
+			offset += replacement.length - match.length - match.tail.length;
 		}
 		
 		return string;
@@ -109,25 +112,25 @@ var balanced =
 		var matches = matchContentsInBetweenBrackets(string, start, right, left);
 		return replaceMatchesInString(matches, string, replace);
 	}
-
+	
 	exports.replaceMatchesInString = replaceMatchesInString; 
-
+	
 	exports.replacements = function (config) {
 		config = config || {};
 		config.head = config.head || config.right;
-
+	
 		if (!config.source) throw new Error('Balanced: please provide a "source" property');
 		if (!config.right) throw new Error('Balanced: please provide a "right" property');
 		if (!config.left) throw new Error('Balanced: please provide a "left" property');
 		if (typeof config.replace !==  'function') throw new Error('Balanced: please provide a "replace" function');
-
+	
 		return replaceMatchesInBetweenBrackets(config.source, config.head, config.right, config.left, config.replace);
 	};
-
+	
 	exports.matches = function (config) {
 		config = config || {};
 		config.head = config.head || config.right;
-
+	
 		if (!config.source) throw new Error('Balanced: please provide a "source" property');
 		if (!config.right) throw new Error('Balanced: please provide a "right" property');
 		if (!config.left) throw new Error('Balanced: please provide a "left" property');
@@ -137,3 +140,4 @@ var balanced =
 
 /***/ }
 /******/ ])
+//# sourceMappingURL=balanced.js.map
