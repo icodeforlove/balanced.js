@@ -12,26 +12,26 @@ balanced string matching, and replacing.
 
 lets say you have
 
-```
-	{
-		@hello 1 {
-			a {
-			}
-		}
-		@hello 2 {
-			a {
-			}
-		}
-		@hello 3 {
-			a {
-			}
+```css
+{
+	@hello 1 {
+		a {
 		}
 	}
+	@hello 2 {
+		a {
+		}
+	}
+	@hello 3 {
+		a {
+		}
+	}
+}
 ```
 
 and you would like to replace the @hello block easily, balanced allows you to do this
 
-```
+```javascript
 var balanced = require('node-balanced');
 
 balanced.replacements({
@@ -53,7 +53,7 @@ this is a simple and efficient way to make balanced replacements, without a pars
 
 you can get balanced matches by doing the following
 
-```
+```javascript
 var balanced = require('node-balanced');
 
 balanced.matches({
@@ -70,7 +70,7 @@ balanced.matches({
 
 in this example we have code and we want to avoid replacing text thats inside of the comments
 
-```
+```css
 {
 	@hello 1 {
 		a {
@@ -91,7 +91,7 @@ in this example we have code and we want to avoid replacing text thats inside of
 
 with balanced you can do this
 
-```
+```javascript
 var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
 	matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
 
