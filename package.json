@@ -1,6 +1,6 @@
 {
   "name": "node-balanced",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "balanced string matching, and replacing.",
   "main": "index.js",
   "scripts": {
