@@ -67,7 +67,7 @@ Balanced.prototype = {
 			if (matchedOpening !== null && depth === 0) {
 				matches.push({
 					index: matchedOpening.index, 
-					length: match.index - matchedOpening.index,
+					length: match.index + match[0].length - matchedOpening.index,
 					head: matchedOpening[0],
 					tail: match[0]
 				});
@@ -97,10 +97,10 @@ Balanced.prototype = {
 		
 		for (var i = 0; i < matches.length; i++) {
 			var match = matches[i],
-				replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length), match.head, match.tail);
-			string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length + match.tail.length, (string.length) - (match.index + offset + match.length));
+				replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail);
+			string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length, (string.length) - (match.index + offset + match.length));
 			
-			offset += replacement.length - match.length - match.tail.length;
+			offset += replacement.length - match.length;
 		}
 		
 		return string;

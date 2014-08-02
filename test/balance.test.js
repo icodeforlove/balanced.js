@@ -19,11 +19,12 @@ describe('Balancing', function() {
 
 	it('can match unbalanced source', function() {
 		var matches = balanced.matches({source: examples.bracketsUnbalanced, right: '{', left: '}', balance: false});
+
 		expect(matches).toEqual([
-			{ index: 8, length: 5, head: '{', tail: '}' },
-			{ index: 37, length: 8, head: '{', tail: '}' },
-			{ index: 69, length: 9, head: '{', tail: '}' },
-			{ index: 94, length: 24, head: '{', tail: '}' }
+			{ index: 8, length: 6, head: '{', tail: '}' },
+			{ index: 37, length: 9, head: '{', tail: '}' },
+			{ index: 69, length: 10, head: '{', tail: '}' },
+			{ index: 94, length: 25, head: '{', tail: '}' }
 		]);
 	});
 
