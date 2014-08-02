@@ -41,6 +41,40 @@ describe('Matches', function() {
 		]);
 	});
 
+	it('can perform simple string matches', function() {
+		expect(balanced.matches({source: examples.bracketsBasic, right: '{', left: '}'})).toEqual([
+			{ index: 7, length: 5, head: '{', tail: '}' },
+			{ index: 36, length: 8, head: '{', tail: '}' },
+			{ index: 68, length: 9, head: '{', tail: '}' },
+			{ index: 93, length: 24, head: '{', tail: '}' },
+			{ index: 141, length: 18, head: '{', tail: '}' }
+  		]);
+
+  		expect(balanced.matches({source: examples.bracketsBasic, right: '(', left: ')'})).toEqual([
+			{ index: 183, length: 5, head: '(', tail: ')' },
+			{ index: 212, length: 8, head: '(', tail: ')' },
+			{ index: 244, length: 9, head: '(', tail: ')' },
+			{ index: 269, length: 24, head: '(', tail: ')' },
+			{ index: 317, length: 18, head: '(', tail: ')' }
+  		]);
+
+  		expect(balanced.matches({source: examples.bracketsBasic, right: '[', left: ']'})).toEqual([
+			{ index: 359, length: 5, head: '[', tail: ']' },
+			{ index: 388, length: 8, head: '[', tail: ']' },
+			{ index: 420, length: 9, head: '[', tail: ']' },
+			{ index: 445, length: 24, head: '[', tail: ']' },
+			{ index: 493, length: 18, head: '[', tail: ']' }
+  		]);
+
+  		expect(balanced.matches({source: examples.bracketsBasic, right: '<tag>', left: '</tag>'})).toEqual([
+			{ index: 535, length: 9, head: '<tag>', tail: '</tag>' },
+			{ index: 573, length: 12, head: '<tag>', tail: '</tag>' },
+			{ index: 614, length: 31, head: '<tag>', tail: '</tag>' },
+			{ index: 666, length: 46, head: '<tag>', tail: '</tag>' },
+			{ index: 741, length: 40, head: '<tag>', tail: '</tag>' }
+		]);
+	});
+
 	it('can perform simple regexp matches', function() {
 		expect(balanced.matches({source: examples.bracketsBasic, right: /\[|\{|\(|<tag>/, left: /\]|\}|\)|<\/tag>/})).toEqual([
 			{ index: 7, length: 5, head: '{', tail: '}' },
