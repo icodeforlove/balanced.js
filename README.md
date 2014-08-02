@@ -36,9 +36,9 @@ var balanced = require('node-balanced');
 
 balanced.replacements({
 	source: source,
-	head: /@hello \d \{/, // optional (defalut: right)
-	right: '{',
-	left: '}',
+	head: /@hello \d \{/, // optional (defalut: open)
+	open: '{',
+	close: '}',
 	balance: false, // optional (default: false)
 	exceptions: false, // optional (default: false)
 	replace: function (source, head, tail) {
@@ -58,9 +58,9 @@ var balanced = require('node-balanced');
 
 balanced.matches({
 	source: source,
-	head: /@hello \d \{/, // optional (defalut: right)
-	right: '{',
-	left: '}',
+	head: /@hello \d \{/, // optional (defalut: open)
+	open: '{',
+	close: '}',
 	balance: false, // optional (default: false)
 	exceptions: false // optional (default: false)
 });
@@ -92,8 +92,8 @@ in this example we have code and we want to avoid replacing text thats inside of
 with balanced you can do this
 
 ```javascript
-var comments = balanced.matches({source: source, right: '/*', left: '*/'}),
-	matches = balanced.matches({source: source, head: /@hello \d \{/, right: '{', left: '}'});
+var comments = balanced.matches({source: source, open: '/*', close: '*/'}),
+	matches = balanced.matches({source: source, head: /@hello \d \{/, open: '{', close: '}'});
 
 matches = matches.filter(function (match) {
 	var insideComment = false;

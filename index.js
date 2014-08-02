@@ -3,14 +3,14 @@
 function Balanced (config) {
 	config = config || {};
 	
-	if (!config.right) throw new Error('Balanced: please provide a "right" property');
-	if (!config.left) throw new Error('Balanced: please provide a "left" property');
+	if (!config.open) throw new Error('Balanced: please provide a "open" property');
+	if (!config.close) throw new Error('Balanced: please provide a "close" property');
 
-	this.head = config.head || config.right;
+	this.head = config.head || config.open;
 	this.balance = config.balance || false;
 	this.exceptions = config.exceptions || false;
-	this.left = config.left;
-	this.right = config.right;
+	this.close = config.close;
+	this.open = config.open;
 }
 
 Balanced.prototype = {
@@ -32,12 +32,12 @@ Balanced.prototype = {
 	matchContentsInBetweenBrackets: function (string) {
 		var caseInsensitive = this.head instanceof RegExp && this.head.ignoreCase,
 			headRegExp = this.head instanceof RegExp ? this.head : new RegExp(this.escapeRegExp(this.head)),
-			rightRegExp = this.right instanceof RegExp ? this.right : new RegExp(this.escapeRegExp(this.right)),
-			leftRegExp = this.left instanceof RegExp ? this.left : new RegExp(this.escapeRegExp(this.left)),
+			openRegExp = this.open instanceof RegExp ? this.open : new RegExp(this.escapeRegExp(this.open)),
+			closeRegExp = this.close instanceof RegExp ? this.close : new RegExp(this.escapeRegExp(this.close)),
 			regex = new RegExp(
 				headRegExp.source + '|' + 
-				rightRegExp.source + '|' + 
-				leftRegExp.source,
+				openRegExp.source + '|' + 
+				closeRegExp.source,
 				'g' + (caseInsensitive ? 'i' : '')
 			),
 			matches = [],
@@ -50,16 +50,16 @@ Balanced.prototype = {
 			if (!matchedOpening && match[0].match(headRegExp) && (!this.balance || this.balance && !depth)) {
 				matchedOpening = match;
 				depth = this.balance ? depth + 1 : 1;
-			} else if (match[0].match(rightRegExp)) {
+			} else if (match[0].match(openRegExp)) {
 				depth++;
-			} else if (match[0].match(leftRegExp)) {
+			} else if (match[0].match(closeRegExp)) {
 				depth--;
 			}
 
 			if (this.balance && depth < 0) {
 	            balanced = false;
 	            if (this.exceptions) {
-	            	throw new Error ('Balanced: expected right bracket at ' + match.index);
+	            	throw new Error ('Balanced: expected open bracket at ' + match.index);
 	            }
 	            break;
 	        }
@@ -76,7 +76,7 @@ Balanced.prototype = {
 		}
 		if (this.balance) {
 			if (this.exceptions && !(balanced && depth === 0)) {
-				throw new Error ('Balanced: expected left bracket at ' + (string.length -1));
+				throw new Error ('Balanced: expected close bracket at ' + (string.length -1));
 			}
 			return balanced && depth === 0 ? matches : null;
 		} else {
@@ -126,8 +126,8 @@ exports.replacements = function (config) {
 
 	var balanced = new Balanced({
 		head: config.head,
-		right: config.right,
-		left: config.left,
+		open: config.open,
+		close: config.close,
 		balance: config.balance,
 		exceptions: config.exceptions
 	});
@@ -141,8 +141,8 @@ exports.replacements = function (config) {
 exports.matches = function (config) {
 	var balanced = new Balanced({
 		head: config.head,
-		right: config.right,
-		left: config.left,
+		open: config.open,
+		close: config.close,
 		balance: config.balance,
 		exceptions: config.exceptions
 	});
