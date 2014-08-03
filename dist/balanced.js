@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.9
+ * balanced.js v0.0.10
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -143,7 +143,7 @@ var balanced =
 					var ignore = false;
 					
 					for (var i = 0; i < ignoreRanges.length; i++) {
-						if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length) {
+						if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length - 1) {
 							ignore = true;
 							continue;
 						}
