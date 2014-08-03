@@ -62,7 +62,7 @@ Balanced.prototype = {
 	 * @param  {String} string
 	 * @return {String}
 	 */
-	matchContentsInBetweenBrackets: function (string) {
+	matchContentsInBetweenBrackets: function (string, ignoreRanges) {
 		var head = Array.isArray(this.head) ? this.head : [this.head],
 			open = Array.isArray(this.open) ? this.open : [this.open],
 			close = Array.isArray(this.close) ? this.close : [this.close];
@@ -89,6 +89,21 @@ Balanced.prototype = {
 			balanced = true;
 
 		while ((match = regex.exec(string))) {
+			if (ignoreRanges) {
+				var ignore = false;
+				
+				for (var i = 0; i < ignoreRanges.length; i++) {
+					if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length) {
+						ignore = true;
+						continue;
+					}
+				}
+
+				if (ignore) {
+					continue;
+				}
+			}
+
 			var matchResultPosition = match.indexOf(match[0], 1) - 1,
 				sectionIndex = Math.floor(matchResultPosition / matchSetLength),
 				valueIndex = matchResultPosition - (Math.floor(matchResultPosition / matchSetLength) * matchSetLength);
@@ -167,10 +182,11 @@ Balanced.prototype = {
 	 * 
 	 * @param  {String} string
 	 * @param  {Function} replace
+	 * @param  {Array} ignoreRanges
 	 * @return {String}
 	 */
-	replaceMatchesInBetweenBrackets: function (string, replace) {
-		var matches = this.matchContentsInBetweenBrackets(string);
+	replaceMatchesInBetweenBrackets: function (string, replace, ignoreRanges) {
+		var matches = this.matchContentsInBetweenBrackets(string, ignoreRanges);
 		return this.replaceMatchesInString(matches, string, replace);
 	}
 };
@@ -194,7 +210,17 @@ exports.replacements = function (config) {
 
 	return balanced.replaceMatchesInBetweenBrackets(config.source, config.replace);
 };
+exports.getRangesForMatch = function (string, regexp) {
+	var pattern = new RegExp(regexp),
+	    match,
+	    matches = [];
 
+	while ((match = pattern.exec(string))) {
+		matches.push({length: match[0].length, index: match.index});
+	}
+
+	return matches;
+};
 exports.matches = function (config) {
 	var balanced = new Balanced({
 		head: config.head,
@@ -207,5 +233,5 @@ exports.matches = function (config) {
 
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');
 
-	return balanced.matchContentsInBetweenBrackets(config.source);
+	return balanced.matchContentsInBetweenBrackets(config.source, config.ignore);
 };

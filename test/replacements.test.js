@@ -3,7 +3,8 @@ var balanced = require('../index'),
 
 var examples = {
 	bracketsBasic: fs.readFileSync(__dirname + '/example-text/brackets-basic.txt', 'utf8'),
-	bracketsHead: fs.readFileSync(__dirname + '/example-text/brackets-head.txt', 'utf8')
+	bracketsHead: fs.readFileSync(__dirname + '/example-text/brackets-head.txt', 'utf8'),
+	comments: fs.readFileSync(__dirname + '/example-text/brackets-comments.txt', 'utf8')
 };
 
 describe('Replacements', function() {
@@ -54,6 +55,39 @@ describe('Replacements', function() {
 			return '<REPLACED>' + source + '</REPLACED>';
 		}})).toEqual(
 			'GARBAGE <REPLACED>\n\t(\n\t\t(\n\t\t\tTEXT\n\t\t)\n\t)\n\thead ()\n</REPLACED>GARBAGE\nGARBAGE <REPLACED>\n\t(\n\t\t(\n\t\t\tTEXT\n\t\t)\n\t)\n\thead2 ()\n</REPLACED>GARBAGE\nGARBAGE <REPLACED>\n\t(\n\t\t(\n\t\t\tTEXT\n\t\t)\n\t)\n\thead ()\n</REPLACED>GARBAGE\nGARBAGE <REPLACED>\n\t(\n\t\t(\n\t\t\tTEXT\n\t\t)\n\t)\n\thead2 ()\n</REPLACED>GARBAGE'
+		);
+	});
+
+	it('can ignore matches', function () {
+		var blockComments = balanced.matches({source: examples.comments, open: '/*', close: '*/'}),
+			singleLineComments = balanced.getRangesForMatch(examples.comments, /^\s*\/\/.+$/gim);
+
+		expect(balanced.replacements({
+			source: examples.comments,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: Array.prototype.concat.call([], blockComments, singleLineComments),
+			replace: function (source, head, tail) {
+				return '<REPLACED>' + source + '</REPLACED>';
+			}
+		})).toEqual(
+			'<REPLACED>\n\t{\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t}\n\n\ta {\n\n\t}\n\n\ta [\n\n\t]\n\n\ta (\n\n\t)\n</REPLACED>\n// <REPLACED>{{TEXT}{TEXT}}a{}a[]a()</REPLACED>\n/*\n{\n\t{\n\t\t{\n\t\t\tTEXT\n\t\t\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t}\n\n\ta {\n\n\t}\n\n\ta [\n\n\t\n\n\ta (\n\n\t)\n}\n*/'
+		);
+	});
+
+	it('can ignore matches 2', function () {
+		var blockComments = balanced.matches({source: examples.comments, open: '/*', close: '*/'});
+
+		expect(balanced.replacements({
+			source: examples.comments,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: blockComments,
+			replace: function (source, head, tail) {
+				return '<REPLACED>' + source + '</REPLACED>';
+			}
+		})).toEqual(
+			'<REPLACED>\n\t{\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t}\n\n\ta {\n\n\t}\n\n\ta [\n\n\t]\n\n\ta (\n\n\t)\n</REPLACED>\n// <REPLACED>{{TEXT}{TEXT}}a{}a[]a()</REPLACED>\n/*\n{\n\t{\n\t\t{\n\t\t\tTEXT\n\t\t\n\t\t{\n\t\t\tTEXT\n\t\t}\n\t}\n\n\ta {\n\n\t}\n\n\ta [\n\n\t\n\n\ta (\n\n\t)\n}\n*/'
 		);
 	});
 });

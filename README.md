@@ -62,7 +62,8 @@ balanced.matches({
 	open: '{',
 	close: '}',
 	balance: false, // optional (default: false) when set to true it will return `null` when there is an error
-	exceptions: false // optional (default: false)
+	exceptions: false // optional (default: false),
+	ignore: [] // array of ignore ranges/matches
 });
 ```
 
@@ -76,6 +77,24 @@ var isBalanced = balanced.matches({
 	open: ['{', '[', '('],
 	close: ['}', ']', ')'],
 	balance: true
+});
+```
+## ignore
+ignore is supported by the `matches` and `replacements` methods, this is very useful for something like not matching inside of comments
+
+```
+var blockComments = balanced.matches({source: source, open: '/*', close: '*/'}),
+	singleLineComments = balanced.getRangesForMatch(source, /^\s*\/\/.+$/gim);
+
+balanced.matches({
+	source: source,
+	head: /@hello \d \{/,
+	open: '{',
+	close: '}',
+	ignore: Array.prototype.concat.call([], blockComments, singleLineComments),
+	replace: function (source, head, tail) {
+		return head + source + tail;
+	}
 });
 ```
 

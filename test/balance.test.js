@@ -2,10 +2,10 @@ var balanced = require('../index'),
 	fs = require('fs');
 
 var examples = {
-	bracketsUnbalanced: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced.txt'),
-	bracketsUnbalanced2: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced2.txt'),
-	bracketsUnbalanced3: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced3.txt'),
-	bracketsUnbalanced4: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced4.txt')
+	bracketsUnbalanced: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced.txt', 'utf8'),
+	bracketsUnbalanced2: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced2.txt', 'utf8'),
+	bracketsUnbalanced3: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced3.txt', 'utf8'),
+	bracketsUnbalanced4: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced4.txt', 'utf8')
 };
 
 describe('Balancing', function() {
