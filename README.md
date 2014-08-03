@@ -61,8 +61,21 @@ balanced.matches({
 	head: /@hello \d \{/, // optional (defalut: open)
 	open: '{',
 	close: '}',
-	balance: false, // optional (default: false)
+	balance: false, // optional (default: false) when set to true it will return `null` when there is an error
 	exceptions: false // optional (default: false)
+});
+```
+
+## multiple head/open/close
+
+you can match multiple head/open/close efficiently by doing this
+
+```javascript
+var isBalanced = balanced.matches({
+	source: '{[({)]}}',
+	open: ['{', '[', '('],
+	close: ['}', ']', ')'],
+	balance: true
 });
 ```
 

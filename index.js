@@ -11,6 +11,7 @@ function Balanced (config) {
 	this.exceptions = config.exceptions || false;
 	this.close = config.close;
 	this.open = config.open;
+	this.caseInsensitive = config.caseInsensitive;
 }
 
 Balanced.prototype = {
@@ -24,61 +25,116 @@ Balanced.prototype = {
 	},
 
 	/**
+	 * creates an RegExp from an array of string or RegExp
+	 * 
+	 * @param  {Array} array
+	 * @param  {String} flags
+	 * @param  {Boolean} grouped
+	 * @return {RegExp}
+	 */
+	regExpFromArray: function (array, flags, grouped) {
+		var string = array.map(function (value) {
+			return value instanceof RegExp ? value.source : this.escapeRegExp(value);
+		}, this).join('|');
+
+		if (grouped) {
+			string = '(' + string + ')';
+		} else {
+			string = '(?:' + string + ')';
+		}
+
+		return new RegExp(string, flags || undefined);
+	},
+
+	/**
+	 * helper creating method for running regExpFromArray with one arg and grouped set to true
+	 * 
+	 * @param  {RegExp/String} value
+	 * @return {RegExp}
+	 */
+	regExpFromArrayGroupedMap: function (value) {
+		return this.regExpFromArray([value], null, true);
+	},
+
+	/**
 	 * Matches contents
 	 * 
 	 * @param  {String} string
 	 * @return {String}
 	 */
 	matchContentsInBetweenBrackets: function (string) {
-		var caseInsensitive = this.head instanceof RegExp && this.head.ignoreCase,
-			headRegExp = this.head instanceof RegExp ? this.head : new RegExp(this.escapeRegExp(this.head)),
-			openRegExp = this.open instanceof RegExp ? this.open : new RegExp(this.escapeRegExp(this.open)),
-			closeRegExp = this.close instanceof RegExp ? this.close : new RegExp(this.escapeRegExp(this.close)),
-			regex = new RegExp(
-				headRegExp.source + '|' + 
-				openRegExp.source + '|' + 
-				closeRegExp.source,
-				'g' + (caseInsensitive ? 'i' : '')
-			),
+		var head = Array.isArray(this.head) ? this.head : [this.head],
+			open = Array.isArray(this.open) ? this.open : [this.open],
+			close = Array.isArray(this.close) ? this.close : [this.close];
+
+		if (
+			!Array.isArray(head) || 
+			!Array.isArray(open) || 
+			!Array.isArray(close) ||
+			!(head.length === open.length && open.length === close.length)
+		) {
+			throw new Error('Balanced: if you use arrays for a "head,open,close" you must use matching arrays for all options');
+		}
+
+		// generates a gnarly regexp
+		var headRegExp = this.regExpFromArray(head.map(this.regExpFromArrayGroupedMap, this)),
+			openRegExp = this.regExpFromArray(open.map(this.regExpFromArrayGroupedMap, this)),
+			closeRegExp = this.regExpFromArray(close.map(this.regExpFromArrayGroupedMap, this)),
+			regex = this.regExpFromArray([headRegExp, openRegExp, closeRegExp], 'g' + (this.caseInsensitive ? 'i' : '')),
+			matchSetLength = head.length,
+			stack = [],
 			matches = [],
 			matchedOpening = null,
-			depth = 0,
 			match,
 			balanced = true;
 
 		while ((match = regex.exec(string))) {
-			if (!matchedOpening && match[0].match(headRegExp) && (!this.balance || this.balance && !depth)) {
-				matchedOpening = match;
-				depth = this.balance ? depth + 1 : 1;
-			} else if (match[0].match(openRegExp)) {
-				depth++;
-			} else if (match[0].match(closeRegExp)) {
-				depth--;
-			}
+			var matchResultPosition = match.indexOf(match[0], 1) - 1,
+				sectionIndex = Math.floor(matchResultPosition / matchSetLength),
+				valueIndex = matchResultPosition - (Math.floor(matchResultPosition / matchSetLength) * matchSetLength);
 
-			if (this.balance && depth < 0) {
-				balanced = false;
-				if (this.exceptions) {
-					throw new Error ('Balanced: expected open bracket at ' + match.index);
+			if (!matchedOpening && sectionIndex === 0 && (!this.balance || this.balance && !stack.length)) {
+				matchedOpening = match;
+
+				if (this.balance) {
+					stack.push(valueIndex);
+				} else {
+					stack = [valueIndex];
 				}
-				break;
-			}
-	 
-			if (matchedOpening !== null && depth === 0) {
-				matches.push({
-					index: matchedOpening.index, 
-					length: match.index + match[0].length - matchedOpening.index,
-					head: matchedOpening[0],
-					tail: match[0]
-				});
-				matchedOpening = null;
+			} else if (sectionIndex === 1 || sectionIndex === 0) {
+				stack.push(valueIndex);
+			} else if (sectionIndex === 2) {
+				var expectedValueIndex = stack.pop();
+
+				if (expectedValueIndex === valueIndex) {
+					if (matchedOpening !== null && stack.length === 0) {
+						matches.push({
+							index: matchedOpening.index, 
+							length: match.index + match[0].length - matchedOpening.index,
+							head: matchedOpening[0],
+							tail: match[0]
+						});
+						matchedOpening = null;
+					}
+				} else if (this.balance) {
+					balanced = false;
+
+					if (this.exceptions) {
+						if (expectedValueIndex === undefined) {
+							throw new Error ('Balanced: unexpected close bracket at ' + match.index);
+						} else if (expectedValueIndex !== valueIndex) {
+							throw new Error ('Balanced: mismatching close bracket at ' + match.index + ' expected "' + close[expectedValueIndex] + '" but found "' + close[valueIndex] + '"');
+						}
+					}
+				}
 			}
 		}
+
 		if (this.balance) {
-			if (this.exceptions && !(balanced && depth === 0)) {
+			if (this.exceptions && !(balanced && stack.length === 0)) {
 				throw new Error ('Balanced: expected close bracket at ' + (string.length -1));
 			}
-			return balanced && depth === 0 ? matches : null;
+			return balanced && stack.length === 0 ? matches : null;
 		} else {
 			return matches;
 		}
@@ -129,7 +185,8 @@ exports.replacements = function (config) {
 		open: config.open,
 		close: config.close,
 		balance: config.balance,
-		exceptions: config.exceptions
+		exceptions: config.exceptions,
+		caseInsensitive: config.caseInsensitive
 	});
 
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');
@@ -144,7 +201,8 @@ exports.matches = function (config) {
 		open: config.open,
 		close: config.close,
 		balance: config.balance,
-		exceptions: config.exceptions
+		exceptions: config.exceptions,
+		caseInsensitive: config.caseInsensitive
 	});
 
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');

@@ -3,7 +3,9 @@ var balanced = require('../index'),
 
 var examples = {
 	bracketsUnbalanced: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced.txt'),
-	bracketsUnbalanced2: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced2.txt')
+	bracketsUnbalanced2: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced2.txt'),
+	bracketsUnbalanced3: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced3.txt'),
+	bracketsUnbalanced4: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced4.txt')
 };
 
 describe('Balancing', function() {
@@ -41,7 +43,7 @@ describe('Balancing', function() {
 			errorMessage = error.message;
 		}
 
-		expect(errorMessage).toEqual('Balanced: expected open bracket at 0');
+		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 0');
 	});
 
 	it('can match throw error for bad unbalanced source', function() {
@@ -52,6 +54,53 @@ describe('Balancing', function() {
 			errorMessage = error.message;
 		}
 
-		expect(errorMessage).toEqual('Balanced: expected open bracket at 0');
+		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 0');
+	});
+
+	it('can perform a balance check with multiple open/close', function () {
+		var errorMessage;
+		try {	
+			balanced.matches({
+				source: examples.bracketsUnbalanced3,
+				head: ['{', '[', '('],
+				open: ['{', '[', '('],
+				close: ['}', ']', ')'],
+				balance: true,
+				exceptions: true
+			});
+		} catch (error) {
+			errorMessage = error.message;
+		}
+
+		expect(errorMessage).toEqual(
+			'Balanced: mismatching close bracket at 20 expected "]" but found "}"'
+		);
+	});
+
+	it('can perform an unbalanced match with multiple open/close', function () {
+		expect(balanced.matches({
+			source: examples.bracketsUnbalanced4,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')']
+		})).toEqual([
+			{ index: 0, length: 73, head: '{', tail: '}' },
+			{ index: 74, length: 73, head: '(', tail: ')' }
+		]);
+	});
+
+	it('can perform an unbalanced match with multiple head/open/close', function () {
+		expect(balanced.matches({
+			source: examples.bracketsUnbalanced4,
+			head: ['a {', 'a [', 'a ('],
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+		})).toEqual([
+			{ index: 44, length: 7, head: 'a {', tail: '}' },
+			{ index: 54, length: 7, head: 'a [', tail: ']' },
+			{ index: 64, length: 7, head: 'a (', tail: ')' },
+			{ index: 118, length: 7, head: 'a {', tail: '}' },
+			{ index: 128, length: 7, head: 'a [', tail: ']' },
+			{ index: 138, length: 7, head: 'a (', tail: ')' }
+		]);
 	});
 });
