@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.8
+ * balanced.js v0.0.9
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -112,7 +112,7 @@ var balanced =
 		 * @param  {String} string
 		 * @return {String}
 		 */
-		matchContentsInBetweenBrackets: function (string) {
+		matchContentsInBetweenBrackets: function (string, ignoreRanges) {
 			var head = Array.isArray(this.head) ? this.head : [this.head],
 				open = Array.isArray(this.open) ? this.open : [this.open],
 				close = Array.isArray(this.close) ? this.close : [this.close];
@@ -139,6 +139,21 @@ var balanced =
 				balanced = true;
 	
 			while ((match = regex.exec(string))) {
+				if (ignoreRanges) {
+					var ignore = false;
+					
+					for (var i = 0; i < ignoreRanges.length; i++) {
+						if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length) {
+							ignore = true;
+							continue;
+						}
+					}
+	
+					if (ignore) {
+						continue;
+					}
+				}
+	
 				var matchResultPosition = match.indexOf(match[0], 1) - 1,
 					sectionIndex = Math.floor(matchResultPosition / matchSetLength),
 					valueIndex = matchResultPosition - (Math.floor(matchResultPosition / matchSetLength) * matchSetLength);
@@ -217,10 +232,11 @@ var balanced =
 		 * 
 		 * @param  {String} string
 		 * @param  {Function} replace
+		 * @param  {Array} ignoreRanges
 		 * @return {String}
 		 */
-		replaceMatchesInBetweenBrackets: function (string, replace) {
-			var matches = this.matchContentsInBetweenBrackets(string);
+		replaceMatchesInBetweenBrackets: function (string, replace, ignoreRanges) {
+			var matches = this.matchContentsInBetweenBrackets(string, ignoreRanges);
 			return this.replaceMatchesInString(matches, string, replace);
 		}
 	};
@@ -244,7 +260,17 @@ var balanced =
 	
 		return balanced.replaceMatchesInBetweenBrackets(config.source, config.replace);
 	};
+	exports.getRangesForMatch = function (string, regexp) {
+		var pattern = new RegExp(regexp),
+		    match,
+		    matches = [];
 	
+		while ((match = pattern.exec(string))) {
+			matches.push({length: match[0].length, index: match.index});
+		}
+	
+		return matches;
+	};
 	exports.matches = function (config) {
 		var balanced = new Balanced({
 			head: config.head,
@@ -257,7 +283,7 @@ var balanced =
 	
 		if (!config.source) throw new Error('Balanced: please provide a "source" property');
 	
-		return balanced.matchContentsInBetweenBrackets(config.source);
+		return balanced.matchContentsInBetweenBrackets(config.source, config.ignore);
 	};
 
 /***/ }
