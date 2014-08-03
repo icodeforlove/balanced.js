@@ -93,7 +93,7 @@ Balanced.prototype = {
 				var ignore = false;
 				
 				for (var i = 0; i < ignoreRanges.length; i++) {
-					if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length) {
+					if (match.index >= ignoreRanges[i].index && match.index <= ignoreRanges[i].index + ignoreRanges[i].length - 1) {
 						ignore = true;
 						continue;
 					}
