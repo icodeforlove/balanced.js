@@ -201,8 +201,8 @@ var balanced =
 	 * @return {Error}
 	 */
 	function errorForStringIndex (error, string, index) {
-		var lines = getRangesForMatch(string.substr(0, index + 1), /^.*$/gim),
-			allLines = getRangesForMatch(string, /^.*$/gim),
+		var lines = getRangesForMatch(string.substr(0, index + 1), /^.*\n?$/gim),
+			allLines = getRangesForMatch(string, /^.*\n?$/gim),
 			line = lines.length - 1,
 			lastLineIndex = lines.length ? lines[lines.length - 1].index : 0,
 			column = index + 1 - lastLineIndex,
