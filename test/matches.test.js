@@ -4,7 +4,8 @@ var balanced = require('../index'),
 var examples = {
 	bracketsBasic: fs.readFileSync(__dirname + '/example-text/brackets-basic.txt', 'utf8'),
 	bracketsHead: fs.readFileSync(__dirname + '/example-text/brackets-head.txt', 'utf8'),
-	comments: fs.readFileSync(__dirname + '/example-text/brackets-comments.txt', 'utf8')
+	comments: fs.readFileSync(__dirname + '/example-text/brackets-comments.txt', 'utf8'),
+	comments2: fs.readFileSync(__dirname + '/example-text/brackets-comments2.txt', 'utf8')
 };
 
 describe('Matches', function() {
@@ -83,31 +84,53 @@ describe('Matches', function() {
 		]);
 	});
 
-	// it('can ignore matches', function () {
-	// 	var blockComments = balanced.matches({source: examples.comments, open: '/*', close: '*/'}),
-	// 		singleLineComments = balanced.getRangesForMatch(examples.comments, /^\s*\/\/.+$/gim);
+	it('can ignore matches', function () {
+		var blockComments = balanced.matches({source: examples.comments, open: '/*', close: '*/'}),
+			singleLineComments = balanced.getRangesForMatch(examples.comments, /^\s*\/\/.+$/gim);
 
-	// 	expect(balanced.matches({
-	// 		source: examples.comments,
-	// 		open: ['{', '[', '('],
-	// 		close: ['}', ']', ')'],
-	// 		ignore: Array.prototype.concat.call([], blockComments, singleLineComments)
-	// 	})).toEqual([
-	// 		{ index: 0, length: 71, head: '{', tail: '}' }
-	// 	]);
-	// });
+		expect(balanced.matches({
+			source: examples.comments,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: Array.prototype.concat.call([], blockComments, singleLineComments)
+		})).toEqual([
+			{ index: 0, length: 71, head: '{', tail: '}' }
+		]);
 
-	// it('can ignore matches 2', function () {
-	// 	var blockComments = balanced.matches({source: examples.comments, open: '/*', close: '*/'});
+		expect(balanced.matches({
+			source: examples.comments,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: blockComments
+		})).toEqual([
+			{ index: 0, length: 71, head: '{', tail: '}' },
+  			{ index: 75, length: 25, head: '{', tail: '}' }
+		]);
+	});
 
-	// 	expect(balanced.matches({
-	// 		source: examples.comments,
-	// 		open: ['{', '[', '('],
-	// 		close: ['}', ']', ')'],
-	// 		ignore: blockComments
-	// 	})).toEqual([
-	// 		{ index: 0, length: 71, head: '{', tail: '}' },
-	// 		{ index: 150, length: 25, head: '{', tail: '}' }
-	// 	]);
-	// });
+	it('can ignore matches 2', function () {
+		var blockComments = balanced.matches({source: examples.comments2, open: '/*', close: '*/'}),
+			singleLineComments = balanced.getRangesForMatch(examples.comments2, /^\s*\/\/.+$/gim);
+
+		expect(balanced.matches({
+			source: examples.comments2,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: blockComments
+		})).toEqual([
+			{ index: 0, length: 2, head: '{', tail: '}' },
+			{ index: 14, length: 2, head: '{', tail: '}' },
+			{ index: 16, length: 2, head: '{', tail: '}' },
+			{ index: 18, length: 8, head: '{', tail: '}' }
+		]);
+
+		expect(balanced.matches({
+			source: examples.comments2,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: Array.prototype.concat.call([], blockComments, singleLineComments)
+		})).toEqual([
+			{ index: 0, length: 2, head: '{', tail: '}' }
+		]);
+	});
 });
