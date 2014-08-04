@@ -5,7 +5,7 @@ balanced string matching, and replacing.
 # install
 
 ```
-	npm install node-balanced
+npm install node-balanced
 ```
 
 ## example time
@@ -175,4 +175,4 @@ with balanced you can do this
 	});
 ```
 
-as you can see using these principles it makes this kind of stuff fairly easy
+as you can see by using these principles you can accomplish this kind of stuff easily
