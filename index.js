@@ -47,7 +47,8 @@ Balanced.prototype = {
 	 * Matches contents
 	 * 
 	 * @param  {String} string
-	 * @return {String}
+	 * @param  {Array} ignoreRanges
+	 * @return {Array}
 	 */
 	matchContentsInBetweenBrackets: function (string, ignoreRanges) {
 		var regex = new RegExp(this.regExp),
