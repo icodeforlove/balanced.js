@@ -121,7 +121,7 @@ in this example we have code and we want to avoid replacing text thats inside of
 // @hello 4 {}
 }
 
-var hello = "@hello 5 {}
+var hello = "@hello 5 {}";
 ```
 
 with balanced you can do this
