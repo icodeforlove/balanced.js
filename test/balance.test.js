@@ -43,7 +43,7 @@ describe('Balancing', function() {
 			errorMessage = error.message;
 		}
 
-		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 0');
+		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 1:1\n\n}GARBAGE{TEXT}GARBAGE\n^\nGARBAGE\nGARBAGE{');
 	});
 
 	it('can match throw error for bad unbalanced source', function() {
@@ -54,7 +54,7 @@ describe('Balancing', function() {
 			errorMessage = error.message;
 		}
 
-		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 0');
+		expect(errorMessage).toEqual('Balanced: unexpected close bracket at 1:1\n\n}{GARBAGE{TEXT}GARBAGE\n^\nGARBAGE\nGARBAGE{');
 	});
 
 	it('can perform a balance check with multiple open/close', function () {
@@ -73,7 +73,7 @@ describe('Balancing', function() {
 		}
 
 		expect(errorMessage).toEqual(
-			'Balanced: mismatching close bracket at 20 expected "]" but found "}"'
+			'Balanced: mismatching close bracket, expected \"]\" but found \"}\" at 5:3\n\n  {\n   TEXT[\n  }\n--^\n  {\n   TEXT]'
 		);
 	});
 

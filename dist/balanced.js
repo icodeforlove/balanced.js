@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.12
+ * balanced.js v0.0.13
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -50,6 +50,9 @@ var balanced =
 
 	// Note: this currently doesn't support nested replacements because its meant to be 
 	// greedy and grab the first head all the way to the last
+	// 
+	// Node: for nested matches you can just do recursion because of the greedyness
+	
 	function Balanced (config) {
 		config = config || {};
 		
@@ -156,9 +159,9 @@ var balanced =
 	
 						if (this.exceptions) {
 							if (expectedValueIndex === undefined) {
-								throw new Error ('Balanced: unexpected close bracket at ' + match.index);
-							} else if (expectedValueIndex !== valueIndex) {
-								throw new Error ('Balanced: mismatching close bracket at ' + match.index + ' expected "' + this.close[expectedValueIndex] + '" but found "' + this.close[valueIndex] + '"');
+								throw errorForStringIndex('Balanced: unexpected close bracket', string, match.index);
+							} else if (expectedValueIndex !== valueIndex) {							
+								throw errorForStringIndex('Balanced: mismatching close bracket, expected "' + this.close[expectedValueIndex] + '" but found "' + this.close[valueIndex] + '"', string, match.index);
 							}
 						}
 					}
@@ -167,7 +170,7 @@ var balanced =
 	
 			if (this.balance) {
 				if (this.exceptions && !(balanced && stack.length === 0)) {
-					throw new Error ('Balanced: expected close bracket at ' + (string.length -1));
+					throw errorForStringIndex('Balanced: expected close bracket', string, string.length -1);
 				}
 				return balanced && stack.length === 0 ? matches : null;
 			} else {
@@ -190,6 +193,53 @@ var balanced =
 	};
 	
 	/**
+	 * creates an error object for the specified index
+	 * 
+	 * @param  {String} error
+	 * @param  {String} string
+	 * @param  {Number} index
+	 * @return {Error}
+	 */
+	function errorForStringIndex (error, string, index) {
+		var lines = getRangesForMatch(string.substr(0, index + 1), /^.*$/gim),
+			allLines = getRangesForMatch(string, /^.*$/gim),
+			line = lines.length - 1,
+			lastLineIndex = lines.length ? lines[lines.length - 1].index : 0,
+			column = index + 1 - lastLineIndex,
+			message = '';
+	
+		// show current and previous lines
+		for (var i = 2; i >= 0; i--) {
+			if (line - i >= 0 && allLines[line-i]) {
+				message += string.substr(allLines[line-i].index, allLines[line-i].length) + '\n';
+			}
+		}
+	
+		// add carrot
+		for (i = 0; i < column - 1; i++) {
+			message += '-';
+		}
+		message += '^\n';
+	
+		// show next lines
+		for (i = 1; i <= 2; i++) {
+			if (line + i >= 0 && allLines[line+i]) {
+				message += string.substr(allLines[line+i].index, allLines[line+i].length) + '\n';
+			}
+		}
+	
+		// replace tabs with spaces
+		message = message.replace(/\t/g, ' ').replace(/\n$/, '');
+	
+		var errorObject = new Error(error + ' at ' + (line + 1) + ':' + column + '\n\n' + message);
+		errorObject.line = line + 1;
+		errorObject.column = column;
+		errorObject.index = index;
+		
+		return errorObject;
+	}
+	
+	/**
 	 * checks if index is inside of range
 	 * 
 	 * @param  {Number}  index
@@ -210,10 +260,14 @@ var balanced =
 	function getRangesForMatch (string, regexp) {
 		var pattern = new RegExp(regexp),
 		    match,
-		    matches = [];
+		    matches = [],
+		    lastIndex = null;
 	
-		while ((match = pattern.exec(string))) {
-			matches.push({index: match.index, length: match[0].length, match: match[0]});
+		if (string) {
+			while ((match = pattern.exec(string)) && match.index !== lastIndex) {
+				matches.push({index: match.index, length: match[0].length, match: match[0]});
+				lastIndex = match.index;
+			}
 		}
 	
 		return matches;
