@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.11
+ * balanced.js v0.0.12
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -97,7 +97,8 @@ var balanced =
 		 * Matches contents
 		 * 
 		 * @param  {String} string
-		 * @return {String}
+		 * @param  {Array} ignoreRanges
+		 * @return {Array}
 		 */
 		matchContentsInBetweenBrackets: function (string, ignoreRanges) {
 			var regex = new RegExp(this.regExp),
@@ -196,7 +197,7 @@ var balanced =
 	 * @return {Boolean}
 	 */
 	function isIndexInRage (index, range) {
-		return range.index <= index && index <= range.index + range.length - 1;
+		return index >= range.index && index <= range.index + range.length - 1;
 	}
 	
 	/**
@@ -272,10 +273,33 @@ var balanced =
 		return new RegExp(string, flags || undefined);
 	}
 	
+	/**
+	 * returns an array of ranges that are not in the without ranges
+	 * 
+	 * @param  {Array} ranges
+	 * @param  {Array} without
+	 * @return {Array}
+	 */
+	function rangesWithout (ranges, without) {
+		return ranges.filter(function (range) {
+			var ignored = false;
+	
+			for (var i = 0; i < without.length; i++) {
+				if (isIndexInRage(range.index, without[i])) {
+					ignored = true;
+					break;
+				}
+			}
+	
+			return !ignored;
+		});
+	}
+	
 	// export generic methods
 	exports.replaceMatchesInString = replaceMatchesInString; 
 	exports.getRangesForMatch = getRangesForMatch;
 	exports.isIndexInRage = isIndexInRage;
+	exports.rangesWithout = rangesWithout;
 	// exports.escapeRegExp = escapeRegExp;
 	// exports.regExpFromArray = regExpFromArray;
 	

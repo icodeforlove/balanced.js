@@ -100,7 +100,7 @@ balanced.matches({
 
 ## advanced
 
-in this example we have code and we want to avoid replacing text thats inside of the comments
+in this example we have code and we want to avoid replacing text thats inside of the multiline/singleline comments, and quotes
 
 ```css
 {
@@ -118,26 +118,61 @@ in this example we have code and we want to avoid replacing text thats inside of
 		a {
 		}
 	}
+// @hello 4 {}
 }
+
+var hello = "@hello 5 {}
 ```
 
 with balanced you can do this
 
 ```javascript
-var comments = balanced.matches({source: source, open: '/*', close: '*/'}),
-	matches = balanced.matches({source: source, head: /@hello \d \{/, open: '{', close: '}'});
+	// returns quote ranges with option ignore filter
+	function getQuoteRanges (string, ignore) {
+		var quotes = balanced.getRangesForMatch(string, new RegExp('\'|"', 'g'));
+		
+		// filter out ingored ranges
+		if (ignore) {
+			quotes = balanced.rangesWithout(quotes, ignore);
+		}
 
-matches = matches.filter(function (match) {
-	var insideComment = false;
+		var currect = null,
+			ranges = [];
+	
+		quotes.forEach(function (quote) {
+			if (currect && currect.match === quote.match) {
+					ranges.push({
+						index: currect.index,
+						length: quote.index - currect.index + 1
+					});
+					currect = null;
+			} else if (!currect) {
+				currect = quote;
+			}
+		});
 
-	comments.forEach(function (comment) {
-		insideComment = match.index >= comment.index && match.index <= comment.index + comment.length;
+		return ranges;
+	}
+
+	var blockComments = balanced.matches({source: string, open: '/*', close: '*/'}),
+		singleLineComments = balanced.getRangesForMatch(string, /^\s*\/\/.+$/gim),
+		ignores = Array.prototype.concat.call([], blockComments, singleLineComments),
+		quotes = getQuoteRanges(string, ignores);
+
+	// remove ignores inside of quotes
+	ignores = balanced.rangesWithout(ignores, quotes);
+
+	// optional ignore code inside of quotes
+	ignores = ignores.concat(quotes);
+	
+	// run your matches or replacements method
+	balanced.matches({
+		source: string,
+		head: /@hello \d \{/,
+		open: '{',
+		close: '}',
+		ignore: ignores
 	});
-
-	return !insideComment;
-});
-
-balanced.replaceMatchesInString(matches, source, function (source, head, tail) {
-	return head + source + tail;
-});
 ```
+
+as you can see using these principles it makes this kind of stuff fairly easy

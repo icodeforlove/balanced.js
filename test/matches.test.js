@@ -133,4 +133,67 @@ describe('Matches', function() {
 			{ index: 0, length: 2, head: '{', tail: '}' }
 		]);
 	});
+
+	it('can match with complex custom ignore ', function () {
+		function getQuoteRanges (string, ignore) {
+			var quotes = balanced.getRangesForMatch(string, new RegExp('\'|"', 'g'));
+			
+			// filter out ingored ranges
+			if (ignore) {
+				quotes = balanced.rangesWithout(quotes, ignore);
+			}
+
+			var currect = null,
+				ranges = [];
+		
+			quotes.forEach(function (quote) {
+				if (currect && currect.match === quote.match) {
+						ranges.push({
+							index: currect.index,
+							length: quote.index - currect.index + 1
+						});
+						currect = null;
+				} else if (!currect) {
+					currect = quote;
+				}
+			});
+
+			return ranges;
+		}
+
+		var string =
+			'/* {}" */\n' +
+			'/* {}\' */\n' +
+			'// {}"\n' +
+			'// {}\'\n' +
+			'{}\n' +
+			'" /*{}*/ "\n' +
+			'\' /*{}*/ \'\n' +
+			'/* """ */\n' +
+			'/* \'\'\' */\n' +
+			'" {} "\n' +
+			'\' {} \'\n' +
+			'/* """ */\n' +
+			'/* \'\'\' */\n';
+
+		var blockComments = balanced.matches({source: string, open: '/*', close: '*/'}),
+			singleLineComments = balanced.getRangesForMatch(string, /^\s*\/\/.+$/gim),
+			ignores = Array.prototype.concat.call([], blockComments, singleLineComments),
+			quotes = getQuoteRanges(string, ignores);
+
+		// remove ignores inside of quotes
+		ignores = balanced.rangesWithout(ignores, quotes);
+
+		// option ignore code inside of quotes
+		ignores = ignores.concat(quotes);
+
+		expect(balanced.matches({
+			source: string,
+			open: ['{', '[', '('],
+			close: ['}', ']', ')'],
+			ignore: ignores
+		})).toEqual([
+			{ index : 34, length : 2, head : '{', tail : '}' }
+		]);
+	});
 });
