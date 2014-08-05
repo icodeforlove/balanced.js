@@ -1,4 +1,4 @@
-# Balanced [![Build Status](https://travis-ci.org/icodeforlove/node-balanced.png?branch=master)](https://travis-ci.org/icodeforlove/node-balanced)
+# Balanced.js [![Build Status](https://travis-ci.org/icodeforlove/node-balanced.png?branch=master)](https://travis-ci.org/icodeforlove/node-balanced)
 
 - [live example](http://jsfiddle.net/icodeforlove/8ULvA/embedded/result%2Cjs/)
 
