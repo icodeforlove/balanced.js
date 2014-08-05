@@ -5,7 +5,8 @@ var examples = {
 	bracketsUnbalanced: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced.txt', 'utf8'),
 	bracketsUnbalanced2: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced2.txt', 'utf8'),
 	bracketsUnbalanced3: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced3.txt', 'utf8'),
-	bracketsUnbalanced4: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced4.txt', 'utf8')
+	bracketsUnbalanced4: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced4.txt', 'utf8'),
+	bracketsUnbalanced5: fs.readFileSync(__dirname + '/example-text/brackets-unbalanced5.txt', 'utf8')
 };
 
 describe('Balancing', function() {
@@ -106,5 +107,25 @@ describe('Balancing', function() {
 			{ index: 128, length: 7, head: 'a [', tail: ']' },
 			{ index: 138, length: 7, head: 'a (', tail: ')' }
 		]);
+	});
+
+	it('can perform a balance check with multiple open/close, and multiple line returns', function () {
+		var errorMessage;
+		try {	
+			balanced.matches({
+				source: examples.bracketsUnbalanced5,
+				head: ['{', '[', '('],
+				open: ['{', '[', '('],
+				close: ['}', ']', ')'],
+				balance: true,
+				exceptions: true
+			});
+		} catch (error) {
+			errorMessage = error.message;
+		}
+
+		expect(errorMessage).toEqual(
+			'Balanced: mismatching close bracket, expected \"]\" but found \"}\" at 6:3\n\n4:   {\n5:    TEXT[\n6:   }\n-----^\n7:   {\n8:    TEXT]'
+		);
 	});
 });
