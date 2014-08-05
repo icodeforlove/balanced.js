@@ -1,5 +1,7 @@
 # Balanced [![Build Status](https://travis-ci.org/icodeforlove/node-balanced.png?branch=master)](https://travis-ci.org/icodeforlove/node-balanced)
 
+- [live example](http://jsfiddle.net/icodeforlove/8ULvA/embedded/result%2Cjs/)
+
 balanced string matching, and replacing.
 
 # install
