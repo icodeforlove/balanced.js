@@ -143,6 +143,18 @@ Balanced.prototype = {
 };
 
 /**
+ * pads a value with desired padding and length
+ * 
+ * @param  {String/Number} value
+ * @param  {Number} length
+ * @param  {String} padding
+ * @return {String}
+ */
+function pad(value, length, padding) {
+    return (value.toString().length < length) ? pad(padding + value, length) : value;
+}
+
+/**
  * creates an error object for the specified index
  * 
  * @param  {String} error
@@ -150,11 +162,6 @@ Balanced.prototype = {
  * @param  {Number} index
  * @return {Error}
  */
-
-function pad(value, length, padding) {
-    return (value.toString().length < length) ? pad(padding + value, length) : value;
-}
-
 function errorForStringIndex (error, string, index) {
 	var lines = getRangesForMatch(string.substr(0, index + 1), /^.*\n?$/gim),
 		allLines = getRangesForMatch(string, /^.*\n?$/gim),
