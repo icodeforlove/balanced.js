@@ -259,14 +259,16 @@ var balanced =
 	 */
 	function getRangesForMatch (string, regexp) {
 		var pattern = new RegExp(regexp),
-		    match,
-		    matches = [],
-		    lastIndex = null;
+			match,
+			matches = [];
 	
 		if (string) {
-			while ((match = pattern.exec(string)) && match.index !== lastIndex) {
+			while ((match = pattern.exec(string))) {
 				matches.push({index: match.index, length: match[0].length, match: match[0]});
-				lastIndex = match.index;
+				
+				if (!match[0].length) {
+					pattern.lastIndex++;
+				}
 			}
 		}
 	
