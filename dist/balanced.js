@@ -170,7 +170,7 @@ var balanced =
 	
 			if (this.balance) {
 				if (this.exceptions && !(balanced && stack.length === 0)) {
-					throw errorForStringIndex('Balanced: expected close bracket', string, string.length -1);
+					throw errorForStringIndex('Balanced: expected "' + this.close[stack[0]] + '" close bracket', string, string.length);
 				}
 				return balanced && stack.length === 0 ? matches : null;
 			} else {
