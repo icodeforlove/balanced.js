@@ -1,8 +1,3 @@
-// Note: this currently doesn't support nested replacements because its meant to be 
-// greedy and grab the first head all the way to the last
-// 
-// Node: for nested matches you can just do recursion because of the greedyness
-
 function Balanced (config) {
 	config = config || {};
 	
