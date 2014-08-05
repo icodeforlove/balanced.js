@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.13
+ * balanced.js v0.0.15
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -200,34 +200,41 @@ var balanced =
 	 * @param  {Number} index
 	 * @return {Error}
 	 */
+	
+	function pad(value, length, padding) {
+	    return (value.toString().length < length) ? pad(padding + value, length) : value;
+	}
+	
 	function errorForStringIndex (error, string, index) {
 		var lines = getRangesForMatch(string.substr(0, index + 1), /^.*\n?$/gim),
 			allLines = getRangesForMatch(string, /^.*\n?$/gim),
 			line = lines.length - 1,
 			lastLineIndex = lines.length ? lines[lines.length - 1].index : 0,
 			column = index + 1 - lastLineIndex,
-			message = '';
+			message = '',
+			previewLines = 2,
+			maxLineNumberWidth = String(lines.length + Math.min(allLines.length - lines.length, previewLines)).length;
 	
 		// show current and previous lines
-		for (var i = 2; i >= 0; i--) {
+		for (var i = previewLines; i >= 0; i--) {
 			if (line - i >= 0 && allLines[line-i]) {
-				message += string.substr(allLines[line-i].index, allLines[line-i].length) + '\n';
+				message += pad(line-i + 1, maxLineNumberWidth, ' ') + ': ' + string.substr(allLines[line-i].index, allLines[line-i].length).replace(/\n/g, '') + '\n';
 			}
 		}
 	
 		// add carrot
-		for (i = 0; i < column - 1; i++) {
+		for (i = 0; i < column - 1 + (maxLineNumberWidth + 2); i++) {
 			message += '-';
 		}
 		message += '^\n';
 	
 		// show next lines
-		for (i = 1; i <= 2; i++) {
+		for (i = 1; i <= previewLines; i++) {
 			if (line + i >= 0 && allLines[line+i]) {
-				message += string.substr(allLines[line+i].index, allLines[line+i].length) + '\n';
+				message += pad(line+i + 1, maxLineNumberWidth, ' ') + ': ' + string.substr(allLines[line+i].index, allLines[line+i].length).replace(/\n/g, '') + '\n';
 			}
 		}
-	
+		
 		// replace tabs with spaces
 		message = message.replace(/\t/g, ' ').replace(/\n$/, '');
 	
@@ -265,7 +272,7 @@ var balanced =
 		if (string) {
 			while ((match = pattern.exec(string))) {
 				matches.push({index: match.index, length: match[0].length, match: match[0]});
-				
+	
 				if (!match[0].length) {
 					pattern.lastIndex++;
 				}
