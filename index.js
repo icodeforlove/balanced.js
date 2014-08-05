@@ -61,7 +61,7 @@ Balanced.prototype = {
 				var ignore = false;
 				
 				for (var i = 0; i < ignoreRanges.length; i++) {
-					if (isIndexInRage(match.index, ignoreRanges[i])) {
+					if (isIndexInRange(match.index, ignoreRanges[i])) {
 						ignore = true;
 						continue;
 					}
@@ -205,7 +205,7 @@ function errorForStringIndex (error, string, index) {
  * @param  {Object}  range
  * @return {Boolean}
  */
-function isIndexInRage (index, range) {
+function isIndexInRange (index, range) {
 	return index >= range.index && index <= range.index + range.length - 1;
 }
 
@@ -300,7 +300,7 @@ function rangesWithout (ranges, without) {
 		var ignored = false;
 
 		for (var i = 0; i < without.length; i++) {
-			if (isIndexInRage(range.index, without[i])) {
+			if (isIndexInRange(range.index, without[i])) {
 				ignored = true;
 				break;
 			}
@@ -313,7 +313,7 @@ function rangesWithout (ranges, without) {
 // export generic methods
 exports.replaceMatchesInString = replaceMatchesInString; 
 exports.getRangesForMatch = getRangesForMatch;
-exports.isIndexInRage = isIndexInRage;
+exports.isIndexInRange = isIndexInRange;
 exports.rangesWithout = rangesWithout;
 // exports.escapeRegExp = escapeRegExp;
 // exports.regExpFromArray = regExpFromArray;
