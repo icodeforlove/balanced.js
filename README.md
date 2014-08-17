@@ -84,7 +84,7 @@ var isBalanced = balanced.matches({
 ## ignore
 ignore is supported by the `matches` and `replacements` methods, this is very useful for something like not matching inside of comments
 
-```
+```javascript
 var blockComments = balanced.matches({source: source, open: '/*', close: '*/'}),
 	singleLineComments = balanced.getRangesForMatch(source, /^\s*\/\/.+$/gim);
 
