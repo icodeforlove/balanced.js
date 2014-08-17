@@ -129,52 +129,52 @@ var hello = "@hello 5 {}";
 with balanced you can do this
 
 ```javascript
-	// returns quote ranges with option ignore filter
-	function getQuoteRanges (string, ignore) {
-		var quotes = balanced.getRangesForMatch(string, new RegExp('\'|"', 'g'));
-		
-		// filter out ingored ranges
-		if (ignore) {
-			quotes = balanced.rangesWithout(quotes, ignore);
-		}
-
-		var currect = null,
-			ranges = [];
+// returns quote ranges with option ignore filter
+function getQuoteRanges (string, ignore) {
+	var quotes = balanced.getRangesForMatch(string, new RegExp('\'|"', 'g'));
 	
-		quotes.forEach(function (quote) {
-			if (currect && currect.match === quote.match) {
-					ranges.push({
-						index: currect.index,
-						length: quote.index - currect.index + 1
-					});
-					currect = null;
-			} else if (!currect) {
-				currect = quote;
-			}
-		});
-
-		return ranges;
+	// filter out ingored ranges
+	if (ignore) {
+		quotes = balanced.rangesWithout(quotes, ignore);
 	}
 
-	var blockComments = balanced.matches({source: string, open: '/*', close: '*/'}),
-		singleLineComments = balanced.getRangesForMatch(string, /^\s*\/\/.+$/gim),
-		ignores = Array.prototype.concat.call([], blockComments, singleLineComments),
-		quotes = getQuoteRanges(string, ignores);
+	var currect = null,
+		ranges = [];
 
-	// remove ignores inside of quotes
-	ignores = balanced.rangesWithout(ignores, quotes);
-
-	// optional ignore code inside of quotes
-	ignores = ignores.concat(quotes);
-	
-	// run your matches or replacements method
-	balanced.matches({
-		source: string,
-		head: /@hello \d \{/,
-		open: '{',
-		close: '}',
-		ignore: ignores
+	quotes.forEach(function (quote) {
+		if (currect && currect.match === quote.match) {
+				ranges.push({
+					index: currect.index,
+					length: quote.index - currect.index + 1
+				});
+				currect = null;
+		} else if (!currect) {
+			currect = quote;
+		}
 	});
+
+	return ranges;
+}
+
+var blockComments = balanced.matches({source: string, open: '/*', close: '*/'}),
+	singleLineComments = balanced.getRangesForMatch(string, /^\s*\/\/.+$/gim),
+	ignores = Array.prototype.concat.call([], blockComments, singleLineComments),
+	quotes = getQuoteRanges(string, ignores);
+
+// remove ignores inside of quotes
+ignores = balanced.rangesWithout(ignores, quotes);
+
+// optional ignore code inside of quotes
+ignores = ignores.concat(quotes);
+
+// run your matches or replacements method
+balanced.matches({
+	source: string,
+	head: /@hello \d \{/,
+	open: '{',
+	close: '}',
+	ignore: ignores
+});
 ```
 
 as you can see by using these principles you can accomplish this kind of stuff easily
