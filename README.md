@@ -10,7 +10,7 @@ balanced string matching, and replacing.
 npm install node-balanced
 ```
 
-## example time
+## example 1
 
 lets say you have
 
@@ -51,6 +51,18 @@ balanced.replacements({
 
 this is a simple and efficient way to make balanced replacements, without a parser.
 
+## example 2
+
+lets say you have some bad html but the html you're trying to match is valid you could do this
+
+```javascript
+balanced.matches({
+	source: html,
+	head: /<div[^>]*class="[^"]*myclassname[^"]*"[^>]*>/,
+	open: /<div[^>]*>/,
+	close: '</div>'
+});
+```
 ## matching
 
 you can get balanced matches by doing the following
