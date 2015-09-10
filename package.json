@@ -3,6 +3,9 @@
   "version": "0.0.15",
   "description": "balanced string matching, and replacing.",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "grunt test"
   },
