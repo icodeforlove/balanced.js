@@ -251,7 +251,8 @@ function replaceMatchesInString (matches, string, replace) {
 
 	for (var i = 0; i < matches.length; i++) {
 		var match = matches[i],
-			replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail);
+			replacement = String(replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail));
+
 		string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length, (string.length) - (match.index + offset + match.length));
 
 		offset += replacement.length - match.length;

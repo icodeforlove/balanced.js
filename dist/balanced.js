@@ -1,5 +1,5 @@
 /**
- * balanced.js v0.0.15
+ * balanced.js v0.0.16
  */
 var balanced =
 /******/ (function(modules) { // webpackBootstrap
@@ -48,14 +48,9 @@ var balanced =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Note: this currently doesn't support nested replacements because its meant to be 
-	// greedy and grab the first head all the way to the last
-	// 
-	// Node: for nested matches you can just do recursion because of the greedyness
-	
 	function Balanced (config) {
 		config = config || {};
-		
+	
 		if (!config.open) throw new Error('Balanced: please provide a "open" property');
 		if (!config.close) throw new Error('Balanced: please provide a "close" property');
 	
@@ -69,8 +64,8 @@ var balanced =
 		this.close = Array.isArray(config.close) ? config.close : [config.close];
 	
 		if (
-			!Array.isArray(this.head) || 
-			!Array.isArray(this.open) || 
+			!Array.isArray(this.head) ||
+			!Array.isArray(this.open) ||
 			!Array.isArray(this.close) ||
 			!(this.head.length === this.open.length && this.open.length === this.close.length)
 		) {
@@ -80,7 +75,7 @@ var balanced =
 		var headRegExp = regExpFromArray(this.head.map(this.regExpFromArrayGroupedMap, this)),
 			openRegExp = regExpFromArray(this.open.map(this.regExpFromArrayGroupedMap, this)),
 			closeRegExp = regExpFromArray(this.close.map(this.regExpFromArrayGroupedMap, this));
-		
+	
 		this.regExp = regExpFromArray([headRegExp, openRegExp, closeRegExp], 'g' + (this.caseInsensitive ? 'i' : ''));
 		this.regExpGroupLength = this.head.length;
 	}
@@ -88,7 +83,7 @@ var balanced =
 	Balanced.prototype = {
 		/**
 		 * helper creating method for running regExpFromArray with one arg and grouped set to true
-		 * 
+		 *
 		 * @param  {RegExp/String} value
 		 * @return {RegExp}
 		 */
@@ -98,7 +93,7 @@ var balanced =
 	
 		/**
 		 * Matches contents
-		 * 
+		 *
 		 * @param  {String} string
 		 * @param  {Array} ignoreRanges
 		 * @return {Array}
@@ -114,9 +109,9 @@ var balanced =
 			while ((match = regex.exec(string))) {
 				if (ignoreRanges) {
 					var ignore = false;
-					
+	
 					for (var i = 0; i < ignoreRanges.length; i++) {
-						if (isIndexInRage(match.index, ignoreRanges[i])) {
+						if (isIndexInRange(match.index, ignoreRanges[i])) {
 							ignore = true;
 							continue;
 						}
@@ -147,7 +142,7 @@ var balanced =
 					if (expectedValueIndex === valueIndex) {
 						if (matchedOpening !== null && stack.length === 0) {
 							matches.push({
-								index: matchedOpening.index, 
+								index: matchedOpening.index,
 								length: match.index + match[0].length - matchedOpening.index,
 								head: matchedOpening[0],
 								tail: match[0]
@@ -160,7 +155,7 @@ var balanced =
 						if (this.exceptions) {
 							if (expectedValueIndex === undefined) {
 								throw errorForStringIndex('Balanced: unexpected close bracket', string, match.index);
-							} else if (expectedValueIndex !== valueIndex) {							
+							} else if (expectedValueIndex !== valueIndex) {
 								throw errorForStringIndex('Balanced: mismatching close bracket, expected "' + this.close[expectedValueIndex] + '" but found "' + this.close[valueIndex] + '"', string, match.index);
 							}
 						}
@@ -180,7 +175,7 @@ var balanced =
 	
 		/**
 		 * Runs replace function against matches, and source.
-		 * 
+		 *
 		 * @param  {String} string
 		 * @param  {Function} replace
 		 * @param  {Array} ignoreRanges
@@ -193,18 +188,25 @@ var balanced =
 	};
 	
 	/**
+	 * pads a value with desired padding and length
+	 *
+	 * @param  {String/Number} value
+	 * @param  {Number} length
+	 * @param  {String} padding
+	 * @return {String}
+	 */
+	function pad(value, length, padding) {
+	    return (value.toString().length < length) ? pad(padding + value, length) : value;
+	}
+	
+	/**
 	 * creates an error object for the specified index
-	 * 
+	 *
 	 * @param  {String} error
 	 * @param  {String} string
 	 * @param  {Number} index
 	 * @return {Error}
 	 */
-	
-	function pad(value, length, padding) {
-	    return (value.toString().length < length) ? pad(padding + value, length) : value;
-	}
-	
 	function errorForStringIndex (error, string, index) {
 		var lines = getRangesForMatch(string.substr(0, index + 1), /^.*\n?$/gim),
 			allLines = getRangesForMatch(string, /^.*\n?$/gim),
@@ -234,7 +236,7 @@ var balanced =
 				message += pad(line+i + 1, maxLineNumberWidth, ' ') + ': ' + string.substr(allLines[line+i].index, allLines[line+i].length).replace(/\n/g, '') + '\n';
 			}
 		}
-		
+	
 		// replace tabs with spaces
 		message = message.replace(/\t/g, ' ').replace(/\n$/, '');
 	
@@ -242,24 +244,24 @@ var balanced =
 		errorObject.line = line + 1;
 		errorObject.column = column;
 		errorObject.index = index;
-		
+	
 		return errorObject;
 	}
 	
 	/**
 	 * checks if index is inside of range
-	 * 
+	 *
 	 * @param  {Number}  index
 	 * @param  {Object}  range
 	 * @return {Boolean}
 	 */
-	function isIndexInRage (index, range) {
+	function isIndexInRange (index, range) {
 		return index >= range.index && index <= range.index + range.length - 1;
 	}
 	
 	/**
 	 * generates an array of match range objects
-	 * 
+	 *
 	 * @param  {String} string
 	 * @param  {RegExp} regexp
 	 * @return {Array}
@@ -284,7 +286,7 @@ var balanced =
 	
 	/**
 	 * Non-destructive match replacements.
-	 * 
+	 *
 	 * @param  {Array} matches
 	 * @param  {String} string
 	 * @param  {Function} replace
@@ -292,21 +294,26 @@ var balanced =
 	 */
 	function replaceMatchesInString (matches, string, replace) {
 		var offset = 0;
-		
+	
+		if (!matches) {
+			return string;
+		}
+	
 		for (var i = 0; i < matches.length; i++) {
 			var match = matches[i],
-				replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail);
+				replacement = String(replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail));
+	
 			string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length, (string.length) - (match.index + offset + match.length));
-			
+	
 			offset += replacement.length - match.length;
 		}
-		
+	
 		return string;
 	}
 	
 	/**
 	 * Escapes a string to be used within a RegExp
-	 * 
+	 *
 	 * @param  {String} string
 	 * @return {String}
 	 */
@@ -316,7 +323,7 @@ var balanced =
 	
 	/**
 	 * creates an RegExp from an array of string or RegExp
-	 * 
+	 *
 	 * @param  {Array} array
 	 * @param  {String} flags
 	 * @param  {Boolean} grouped
@@ -338,7 +345,7 @@ var balanced =
 	
 	/**
 	 * returns an array of ranges that are not in the without ranges
-	 * 
+	 *
 	 * @param  {Array} ranges
 	 * @param  {Array} without
 	 * @return {Array}
@@ -348,7 +355,7 @@ var balanced =
 			var ignored = false;
 	
 			for (var i = 0; i < without.length; i++) {
-				if (isIndexInRage(range.index, without[i])) {
+				if (isIndexInRange(range.index, without[i])) {
 					ignored = true;
 					break;
 				}
@@ -359,9 +366,9 @@ var balanced =
 	}
 	
 	// export generic methods
-	exports.replaceMatchesInString = replaceMatchesInString; 
+	exports.replaceMatchesInString = replaceMatchesInString;
 	exports.getRangesForMatch = getRangesForMatch;
-	exports.isIndexInRage = isIndexInRage;
+	exports.isIndexInRange = isIndexInRange;
 	exports.rangesWithout = rangesWithout;
 	// exports.escapeRegExp = escapeRegExp;
 	// exports.regExpFromArray = regExpFromArray;

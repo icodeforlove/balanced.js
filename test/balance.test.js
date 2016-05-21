@@ -32,7 +32,7 @@ describe('Balancing', function() {
 	});
 
 	it('can replace while unbalanced', function () {
-		balanced.replacements({
+		expect(balanced.replacements({
 		    source: 'unbalanced{source',
 		    open: ['{'],
 		    close: ['}'],
@@ -41,8 +41,20 @@ describe('Balancing', function() {
 		    replace: function () {
 		    	return '';
 		    }
-		});
+		})).toEqual('unbalanced{source');
 	});
+
+	it('can replace with numbers', function () {
+		expect(balanced.replacements({
+			source: "{?}{?}",
+			open: "{",
+			close: "}",
+			replace: function(match, head, tail) {
+				return 1;
+			}
+		})).toEqual('11');
+	});
+
 
 	it('can match bad unbalanced source', function() {
 		var matches = balanced.matches({source: examples.bracketsUnbalanced2, open: '{', close: '}', balance: false});
