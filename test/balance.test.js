@@ -31,6 +31,19 @@ describe('Balancing', function() {
 		]);
 	});
 
+	it('can replace while unbalanced', function () {
+		balanced.replacements({
+		    source: 'unbalanced{source',
+		    open: ['{'],
+		    close: ['}'],
+		    balance: true,
+		    exceptions: false,
+		    replace: function () {
+		    	return '';
+		    }
+		});
+	});
+
 	it('can match bad unbalanced source', function() {
 		var matches = balanced.matches({source: examples.bracketsUnbalanced2, open: '{', close: '}', balance: false});
 		expect(matches).toEqual([]);
@@ -64,7 +77,7 @@ describe('Balancing', function() {
 
 	it('can perform a balance check with multiple open/close', function () {
 		var errorMessage;
-		try {	
+		try {
 			balanced.matches({
 				source: examples.bracketsUnbalanced3,
 				head: ['{', '[', '('],
@@ -111,7 +124,7 @@ describe('Balancing', function() {
 
 	it('can perform a balance check with multiple open/close, and multiple line returns', function () {
 		var errorMessage;
-		try {	
+		try {
 			balanced.matches({
 				source: examples.bracketsUnbalanced5,
 				head: ['{', '[', '('],

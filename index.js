@@ -1,6 +1,6 @@
 function Balanced (config) {
 	config = config || {};
-	
+
 	if (!config.open) throw new Error('Balanced: please provide a "open" property');
 	if (!config.close) throw new Error('Balanced: please provide a "close" property');
 
@@ -14,8 +14,8 @@ function Balanced (config) {
 	this.close = Array.isArray(config.close) ? config.close : [config.close];
 
 	if (
-		!Array.isArray(this.head) || 
-		!Array.isArray(this.open) || 
+		!Array.isArray(this.head) ||
+		!Array.isArray(this.open) ||
 		!Array.isArray(this.close) ||
 		!(this.head.length === this.open.length && this.open.length === this.close.length)
 	) {
@@ -25,7 +25,7 @@ function Balanced (config) {
 	var headRegExp = regExpFromArray(this.head.map(this.regExpFromArrayGroupedMap, this)),
 		openRegExp = regExpFromArray(this.open.map(this.regExpFromArrayGroupedMap, this)),
 		closeRegExp = regExpFromArray(this.close.map(this.regExpFromArrayGroupedMap, this));
-	
+
 	this.regExp = regExpFromArray([headRegExp, openRegExp, closeRegExp], 'g' + (this.caseInsensitive ? 'i' : ''));
 	this.regExpGroupLength = this.head.length;
 }
@@ -33,7 +33,7 @@ function Balanced (config) {
 Balanced.prototype = {
 	/**
 	 * helper creating method for running regExpFromArray with one arg and grouped set to true
-	 * 
+	 *
 	 * @param  {RegExp/String} value
 	 * @return {RegExp}
 	 */
@@ -43,7 +43,7 @@ Balanced.prototype = {
 
 	/**
 	 * Matches contents
-	 * 
+	 *
 	 * @param  {String} string
 	 * @param  {Array} ignoreRanges
 	 * @return {Array}
@@ -59,7 +59,7 @@ Balanced.prototype = {
 		while ((match = regex.exec(string))) {
 			if (ignoreRanges) {
 				var ignore = false;
-				
+
 				for (var i = 0; i < ignoreRanges.length; i++) {
 					if (isIndexInRange(match.index, ignoreRanges[i])) {
 						ignore = true;
@@ -92,7 +92,7 @@ Balanced.prototype = {
 				if (expectedValueIndex === valueIndex) {
 					if (matchedOpening !== null && stack.length === 0) {
 						matches.push({
-							index: matchedOpening.index, 
+							index: matchedOpening.index,
 							length: match.index + match[0].length - matchedOpening.index,
 							head: matchedOpening[0],
 							tail: match[0]
@@ -105,7 +105,7 @@ Balanced.prototype = {
 					if (this.exceptions) {
 						if (expectedValueIndex === undefined) {
 							throw errorForStringIndex('Balanced: unexpected close bracket', string, match.index);
-						} else if (expectedValueIndex !== valueIndex) {							
+						} else if (expectedValueIndex !== valueIndex) {
 							throw errorForStringIndex('Balanced: mismatching close bracket, expected "' + this.close[expectedValueIndex] + '" but found "' + this.close[valueIndex] + '"', string, match.index);
 						}
 					}
@@ -125,7 +125,7 @@ Balanced.prototype = {
 
 	/**
 	 * Runs replace function against matches, and source.
-	 * 
+	 *
 	 * @param  {String} string
 	 * @param  {Function} replace
 	 * @param  {Array} ignoreRanges
@@ -139,7 +139,7 @@ Balanced.prototype = {
 
 /**
  * pads a value with desired padding and length
- * 
+ *
  * @param  {String/Number} value
  * @param  {Number} length
  * @param  {String} padding
@@ -151,7 +151,7 @@ function pad(value, length, padding) {
 
 /**
  * creates an error object for the specified index
- * 
+ *
  * @param  {String} error
  * @param  {String} string
  * @param  {Number} index
@@ -186,7 +186,7 @@ function errorForStringIndex (error, string, index) {
 			message += pad(line+i + 1, maxLineNumberWidth, ' ') + ': ' + string.substr(allLines[line+i].index, allLines[line+i].length).replace(/\n/g, '') + '\n';
 		}
 	}
-	
+
 	// replace tabs with spaces
 	message = message.replace(/\t/g, ' ').replace(/\n$/, '');
 
@@ -194,13 +194,13 @@ function errorForStringIndex (error, string, index) {
 	errorObject.line = line + 1;
 	errorObject.column = column;
 	errorObject.index = index;
-	
+
 	return errorObject;
 }
 
 /**
  * checks if index is inside of range
- * 
+ *
  * @param  {Number}  index
  * @param  {Object}  range
  * @return {Boolean}
@@ -211,7 +211,7 @@ function isIndexInRange (index, range) {
 
 /**
  * generates an array of match range objects
- * 
+ *
  * @param  {String} string
  * @param  {RegExp} regexp
  * @return {Array}
@@ -236,7 +236,7 @@ function getRangesForMatch (string, regexp) {
 
 /**
  * Non-destructive match replacements.
- * 
+ *
  * @param  {Array} matches
  * @param  {String} string
  * @param  {Function} replace
@@ -244,21 +244,25 @@ function getRangesForMatch (string, regexp) {
  */
 function replaceMatchesInString (matches, string, replace) {
 	var offset = 0;
-	
+
+	if (!matches) {
+		return string;
+	}
+
 	for (var i = 0; i < matches.length; i++) {
 		var match = matches[i],
 			replacement = replace(string.substr(match.index + offset + match.head.length, match.length - match.head.length - match.tail.length), match.head, match.tail);
 		string = string.substr(0, match.index + offset) + replacement + string.substr(match.index + offset + match.length, (string.length) - (match.index + offset + match.length));
-		
+
 		offset += replacement.length - match.length;
 	}
-	
+
 	return string;
 }
 
 /**
  * Escapes a string to be used within a RegExp
- * 
+ *
  * @param  {String} string
  * @return {String}
  */
@@ -268,7 +272,7 @@ function escapeRegExp (string) {
 
 /**
  * creates an RegExp from an array of string or RegExp
- * 
+ *
  * @param  {Array} array
  * @param  {String} flags
  * @param  {Boolean} grouped
@@ -290,7 +294,7 @@ function regExpFromArray (array, flags, grouped) {
 
 /**
  * returns an array of ranges that are not in the without ranges
- * 
+ *
  * @param  {Array} ranges
  * @param  {Array} without
  * @return {Array}
@@ -311,7 +315,7 @@ function rangesWithout (ranges, without) {
 }
 
 // export generic methods
-exports.replaceMatchesInString = replaceMatchesInString; 
+exports.replaceMatchesInString = replaceMatchesInString;
 exports.getRangesForMatch = getRangesForMatch;
 exports.isIndexInRange = isIndexInRange;
 exports.rangesWithout = rangesWithout;
