@@ -341,7 +341,7 @@ exports.replacements = function (config) {
 	if (!config.source) throw new Error('Balanced: please provide a "source" property');
 	if (typeof config.replace !==  'function') throw new Error('Balanced: please provide a "replace" function');
 
-	return balanced.replaceMatchesInBetweenBrackets(config.source, config.replace);
+	return balanced.replaceMatchesInBetweenBrackets(config.source, config.replace, config.ignore);
 };
 exports.matches = function (config) {
 	var balanced = new Balanced({
